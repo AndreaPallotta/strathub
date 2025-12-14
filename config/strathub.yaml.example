@@ -11,7 +11,7 @@ kalshi:
 sources:
   odds:
     base_http: "https://api.the-odds-api.com/v4"
-    api_key: "0c9e5bfdd8ef2ad26c8426a77ef81bfe"
+    api_key: "<YOUR_API_KEY>"
     sports_keys:
       - "americanfootball_nfl"
       - "basketball_nba"
