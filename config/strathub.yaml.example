@@ -1,0 +1,63 @@
+kalshi:
+  base_http: "https://demo-api.kalshi.co"
+  base_ws: "wss://demo-api.kalshi.co"
+  # event_ticker_map:
+  #   "nfl:2025:ne@nyj:1": "NFL.2025.WK01.NE@NYJ.YES"
+  #   "nfl:2025:dal@phi:1": "NFL.2025.WK01.DAL@PHI.YES"
+  #   "nfl:2025:gb@chi:2": "NFL.2025.WK02.GB@CHI.YES"
+  #   "nba:2025:lakers@warriors:1": "NBA.2025.REG.LAL@GSW.YES"
+  #   "nba:2025:celtics@heat:1": "NBA.2025.REG.BOS@MIA.YES"
+
+sources:
+  odds:
+    base_http: "https://api.the-odds-api.com/v4"
+    api_key: "0c9e5bfdd8ef2ad26c8426a77ef81bfe"
+    sports_keys:
+      - "americanfootball_nfl"
+      - "basketball_nba"
+    poll_interval_seconds: 30
+    metadata:
+      region: "us"
+      markets: "h2h"
+      oddsFormat: "american"
+
+simulation:
+  dry_run: true
+  contract_per_trade: 5
+  max_exposure_usd: 50
+  slippage_buy: 0.01
+  slippage_sell: 0.01
+
+mode:
+  type: "backtest" # live|backtest
+  backtest_file: "data/backtests/example.ndjson"
+  backtest_repeat: false
+  backtest_batch_size: 1
+
+signals:
+  min_edge_enter: 0.10
+  min_edge_exit: 0.05
+
+logging:
+  log_level: "INFO"
+  transports:
+    file: true
+    websocket: true
+    multicast: false
+  file:
+    enabled: false
+    base_filename: "events"
+    dir_name: "logs"
+    rotate_daily: true
+  websocket:
+    enabled: true
+    host: "127.0.0.1"
+    port: 8756
+    path: "/ws/engine"
+  multicast:
+    enabled: false
+    group: "239.0.0.1"
+    port: 5000
+    ttl: 1
+  snapshot_recorder:
+    enabled: true

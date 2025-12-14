@@ -1,0 +1,17 @@
+enabled_by_default: true
+
+signals:
+  min_edge_enter: 0.10
+  min_edge_exit: 0.05
+
+risk:
+  contracts_per_trade: 5
+  max_exposure_usd: 50
+
+markets:
+  sports:
+    - "americanfootball_nfl"
+  event_ids:
+    - "nfl:2025:ne@nyj:1"
+  kalshi_tickers:
+    - "NFL.2025.WK01.NE@NYJ.YES"

@@ -1,0 +1,4 @@
+logs/*.log
+data/**/*.ndjson.gz
+**/__pycache__/
+config/strathub.yaml
