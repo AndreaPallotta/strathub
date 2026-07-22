@@ -88,7 +88,7 @@ npm run dev
 
 ## 📦 GitHub Actions CI & Multi-Platform Releases
 
-Pushing a version tag automatically compiles and publishes desktop installers and standalone CLI binaries for **Windows (x86_64)**, **Linux (AMD64)**, and **Linux (ARM64)** to the GitHub Releases page:
+Pushing a version tag automatically compiles and publishes desktop installers and standalone CLI binaries for **Windows (x86_64)** and **Linux (AMD64 x86_64)** to the GitHub Releases page:
 
 ```bash
 git tag v2.0.0-alpha.1
@@ -98,7 +98,6 @@ git push origin v2.0.0-alpha.1
 ### Published Release Executables & Packages:
 - 🪟 **Windows (x86_64)**: `strathub_app.exe`, `strathub-cli-windows-amd64.exe`, `.msi` installer
 - 🐧 **Linux (AMD64 x86_64)**: `strathub_app-linux-amd64`, `strathub-cli-linux-amd64`, `.AppImage`, `.deb`
-- 🥧 **Linux (ARM64 aarch64)**: `strathub-cli-linux-arm64` (Raspberry Pi & ARM servers)
 
 ---
 
