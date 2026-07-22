@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,7 +36,7 @@ impl ParameterOptimizer {
                     min_spread: (min_spread * 1000.0).round() / 1000.0,
                     max_position_size: size,
                     total_pnl: (base_pnl * 100.0).round() / 100.0,
-                    win_rate: (win_rate * 1000.0).round() / 100.0,
+                    win_rate: (win_rate * 1000.0).round() / 1000.0,
                     sharpe_ratio: (sharpe * 100.0).round() / 100.0,
                     max_drawdown: (max_dd * 1000.0).round() / 100.0,
                 });

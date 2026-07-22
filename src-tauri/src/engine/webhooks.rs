@@ -1,6 +1,7 @@
+#![allow(dead_code)]
+
 use serde::{Deserialize, Serialize};
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebhookConfig {
     pub slack_url: Option<String>,

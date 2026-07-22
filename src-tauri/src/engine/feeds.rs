@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use super::models::MarketSnapshot;
 use rand::Rng;
 use std::fs::File;
@@ -13,12 +15,12 @@ pub struct MockSyntheticFeed {
     counter: u64,
 }
 
-struct MockMarketState {
-    ticker: String,
-    sport_key: String,
-    event_id: String,
-    current_prob: f64,
-    spread: f64,
+pub struct MockMarketState {
+    pub ticker: String,
+    pub sport_key: String,
+    pub event_id: String,
+    pub current_prob: f64,
+    pub spread: f64,
 }
 
 impl MockSyntheticFeed {
@@ -99,11 +101,10 @@ impl DataFeed for MockSyntheticFeed {
 }
 
 pub struct FileReplayerFeed {
-    snapshots: Vec<MarketSnapshot>,
-    cursor: usize,
+    pub snapshots: Vec<MarketSnapshot>,
+    pub cursor: usize,
 }
 
-#[allow(dead_code)]
 impl FileReplayerFeed {
     pub fn new<P: AsRef<Path>>(path: P) -> std::io::Result<Self> {
         let file = File::open(path)?;

@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,12 +19,12 @@ pub struct MarketSnapshot {
 pub struct StrategyAction {
     pub action_type: String,
     pub kalshi_ticker: String,
-    pub side: Option<String>, // "BUY" or "SELL"
+    pub side: Option<String>,
     pub size: Option<i64>,
     pub reason: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Position {
     pub instrument: String,
     pub strategy_id: String,
@@ -52,32 +54,32 @@ pub struct StrategyInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "snake_case")]
 pub enum EngineEvent {
-    #[serde(rename = "pnl_update")]
     PnlUpdate {
         timestamp: i64,
         pnl: f64,
         strategy_id: Option<String>,
     },
-    #[serde(rename = "strategy_snapshot")]
-    StrategySnapshot { strategies: Vec<StrategyInfo> },
-    #[serde(rename = "strategy_status")]
+    StrategySnapshot {
+        strategies: Vec<StrategyInfo>,
+    },
     StrategyStatus {
         strategy_id: String,
         enabled: bool,
-        name: String,
+        name: Option<String>,
     },
-    #[serde(rename = "position_update")]
     PositionUpdate {
         strategy_id: String,
         position: Position,
     },
-    #[serde(rename = "trade")]
-    Trade { trade: SimulatedFill },
-    #[serde(rename = "log")]
-    Log { level: String, message: String },
-    #[serde(rename = "metrics")]
+    Trade {
+        trade: SimulatedFill,
+    },
+    Log {
+        level: String,
+        message: String,
+    },
     Metrics {
         cpu: f64,
         mem_gb: Option<f64>,
@@ -85,9 +87,8 @@ pub enum EngineEvent {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum FeedMode {
     SyntheticMock,
-    FileReplayer,
-    LiveApi,
+    ReplayerFile,
 }

@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use super::feeds::{DataFeed, MockSyntheticFeed};
 use super::models::{EngineEvent, FeedMode, StrategyInfo};
 use super::py_bridge::PyStrategyBridge;
@@ -31,7 +33,7 @@ impl Engine {
             StrategyInfo {
                 id: "polymarket_nfl_arb".to_string(),
                 name: "Polymarket NFL Moneyline Arbitrage".to_string(),
-                enabled: false, // Disabled by default
+                enabled: false,
             },
         );
         strategies.insert(
@@ -39,7 +41,7 @@ impl Engine {
             StrategyInfo {
                 id: "kalshi_elections_arb".to_string(),
                 name: "Kalshi Elections & Political Odds Arbitrage".to_string(),
-                enabled: false, // Disabled by default
+                enabled: false,
             },
         );
         strategies.insert(
@@ -47,7 +49,7 @@ impl Engine {
             StrategyInfo {
                 id: "stat_arb".to_string(),
                 name: "Statistical Mean Reversion".to_string(),
-                enabled: false, // Disabled by default
+                enabled: false,
             },
         );
 

@@ -1,10 +1,10 @@
 mod engine;
 
+use engine::engine::Engine;
 use engine::models::{EngineEvent, Position, StrategyInfo};
 use engine::optimizer::{OptimizationResult, ParameterOptimizer};
 use engine::storage::{BacktestPoint, BacktestRecord, BacktestStorage, DrawdownPoint, TradeDistributionPoint};
 use engine::webhooks::WebhookNotifier;
-use engine::Engine;
 use serde_json::json;
 use std::sync::Arc;
 use tauri::{Emitter, State};
@@ -32,7 +32,7 @@ fn toggle_strategy(state: State<AppState>, strategy_id: String, enabled: bool) -
         let _ = state.engine.event_tx.send(EngineEvent::StrategyStatus {
             strategy_id: strategy_id.clone(),
             enabled,
-            name: info.name.clone(),
+            name: Some(info.name.clone()),
         });
 
         let _ = state.engine.event_tx.send(EngineEvent::Log {

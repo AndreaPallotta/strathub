@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use super::models::{MarketSnapshot, Position, SimulatedFill, StrategyAction};
 use std::collections::HashMap;
 

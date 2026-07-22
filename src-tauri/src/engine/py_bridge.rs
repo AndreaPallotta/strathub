@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use super::models::{MarketSnapshot, StrategyAction};
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
