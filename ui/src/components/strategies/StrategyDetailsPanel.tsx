@@ -1,5 +1,6 @@
-import { Card, Text, Group, Badge, Stack, Table } from '@mantine/core';
+import { Card, Text, Group, Badge, Stack, Table, Divider } from '@mantine/core';
 import { useEngineStore } from '../../state/engineStore';
+import { StrategyParamTweaker } from './StrategyParamTweaker';
 
 export function StrategyDetailsPanel() {
   const selectedStrategyId = useEngineStore((s) => s.selectedStrategyId);
@@ -14,7 +15,7 @@ export function StrategyDetailsPanel() {
           Strategy details
         </Text>
         <Text size="xs" c="dimmed">
-          Select a strategy from the list to see details.
+          Select a strategy from the list to see details and live parameter controls.
         </Text>
       </Card>
     );
@@ -115,6 +116,11 @@ export function StrategyDetailsPanel() {
         </Group>
       </Stack>
 
+      {/* Embedded Live Strategy Parameter Tweaker Panel */}
+      <StrategyParamTweaker strategyId={selectedStrategyId} />
+
+      <Divider my="md" />
+
       {stratPositions.length > 0 && (
         <>
           <Text fw={500} size="sm" mb={4}>
@@ -168,7 +174,7 @@ export function StrategyDetailsPanel() {
                 <Table.Tr key={t.id}>
                   <Table.Td>
                     <Text size="xs" c="dimmed">
-                      {new Date(t.ts).toLocaleString()}
+                      {new Date(t.ts || Date.now()).toLocaleString()}
                     </Text>
                   </Table.Td>
                   <Table.Td>{t.instrument}</Table.Td>

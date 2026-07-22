@@ -7,6 +7,7 @@ import {
   TextInput,
   SegmentedControl,
   Stack,
+  ScrollArea,
 } from '@mantine/core';
 import { useEngineStore } from '../../state/engineStore';
 import { useMemo, useState } from 'react';
@@ -44,19 +45,21 @@ export function TradesPanel() {
     const windowMs = rangeToMs(range);
 
     return trades.filter((t) => {
+      const inst = t.instrument || t.kalshi_ticker || '';
+      const timestamp = t.ts || Date.now();
       if (selectedStrategyId && t.strategy_id !== selectedStrategyId) {
         return false;
       }
       if (
         instrumentFilter &&
-        !t.instrument.toLowerCase().includes(instrumentFilter.toLowerCase())
+        !inst.toLowerCase().includes(instrumentFilter.toLowerCase())
       ) {
         return false;
       }
-      if (sideFilter !== 'all' && t.side !== sideFilter) {
+      if (sideFilter !== 'all' && t.side.toLowerCase() !== sideFilter.toLowerCase()) {
         return false;
       }
-      if (windowMs != null && now - t.ts > windowMs) {
+      if (windowMs != null && now - timestamp > windowMs) {
         return false;
       }
       return true;
@@ -115,61 +118,67 @@ export function TradesPanel() {
       </Stack>
 
       {filtered.length === 0 ? (
-        <Text size="xs" c="dimmed">
+        <Text size="xs" c="dimmed" mt="xs">
           No trades match filters.
         </Text>
       ) : (
-        <Table striped highlightOnHover withTableBorder>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Time</Table.Th>
-              <Table.Th>Strategy</Table.Th>
-              <Table.Th>Instrument</Table.Th>
-              <Table.Th>Side</Table.Th>
-              <Table.Th>Size</Table.Th>
-              <Table.Th>Price</Table.Th>
-              <Table.Th>PnL</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {filtered.slice(0, 100).map((t) => (
-              <Table.Tr key={t.id}>
-                <Table.Td>
-                  <Text size="xs" c="dimmed">
-                    {new Date(t.ts).toLocaleString()}
-                  </Text>
-                </Table.Td>
-                <Table.Td>{t.strategy_id}</Table.Td>
-                <Table.Td>{t.instrument}</Table.Td>
-                <Table.Td>
-                  <Badge
-                    size="xs"
-                    color={t.side === 'buy' ? 'green' : 'red'}
-                    variant="filled"
-                  >
-                    {t.side.toUpperCase()}
-                  </Badge>
-                </Table.Td>
-                <Table.Td>{t.size}</Table.Td>
-                <Table.Td>{t.price.toFixed(4)}</Table.Td>
-                <Table.Td>
-                  {t.pnl != null ? (
-                    <Text
-                      size="xs"
-                      c={t.pnl > 0 ? 'green' : t.pnl < 0 ? 'red' : 'dimmed'}
-                    >
-                      {t.pnl.toFixed(2)}
-                    </Text>
-                  ) : (
-                    <Text size="xs" c="dimmed">
-                      —
-                    </Text>
-                  )}
-                </Table.Td>
+        <ScrollArea h={260} type="always" offsetScrollbars>
+          <Table striped highlightOnHover withTableBorder>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Time</Table.Th>
+                <Table.Th>Strategy</Table.Th>
+                <Table.Th>Instrument</Table.Th>
+                <Table.Th>Side</Table.Th>
+                <Table.Th>Size</Table.Th>
+                <Table.Th>Price</Table.Th>
+                <Table.Th>PnL</Table.Th>
               </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
+            </Table.Thead>
+            <Table.Tbody>
+              {filtered.map((t, idx) => {
+                const isBuy = t.side.toUpperCase() === 'BUY';
+                return (
+                  <Table.Tr key={t.id ?? idx}>
+                    <Table.Td>
+                      <Text size="xs" c="dimmed">
+                        {new Date(t.ts || Date.now()).toLocaleTimeString()}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>{t.strategy_id}</Table.Td>
+                    <Table.Td>{t.instrument || t.kalshi_ticker || 'N/A'}</Table.Td>
+                    <Table.Td>
+                      <Badge
+                        size="xs"
+                        color={isBuy ? 'teal' : 'orange'}
+                        variant="filled"
+                      >
+                        {t.side.toUpperCase()}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td>{t.size}</Table.Td>
+                    <Table.Td>${t.price.toFixed(3)}</Table.Td>
+                    <Table.Td>
+                      {t.pnl != null ? (
+                        <Text
+                          size="xs"
+                          fw={600}
+                          c={t.pnl > 0 ? 'green' : t.pnl < 0 ? 'red' : 'dimmed'}
+                        >
+                          {t.pnl > 0 ? '+' : ''}${t.pnl.toFixed(2)}
+                        </Text>
+                      ) : (
+                        <Text size="xs" c="dimmed">
+                          —
+                        </Text>
+                      )}
+                    </Table.Td>
+                  </Table.Tr>
+                );
+              })}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
       )}
     </Card>
   );

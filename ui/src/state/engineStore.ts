@@ -8,6 +8,31 @@ import type {
   BacktestRun,
 } from '../types/engine';
 
+const BACKTESTS_STORAGE_KEY = 'strathub_persistent_backtests';
+
+function loadPersistedBacktests(): BacktestRun[] {
+  try {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(BACKTESTS_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }
+    return [];
+  } catch (err) {
+    console.warn('Failed to load persisted backtests', err);
+    return [];
+  }
+}
+
+function savePersistedBacktests(runs: BacktestRun[]) {
+  try {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      localStorage.setItem(BACKTESTS_STORAGE_KEY, JSON.stringify(runs));
+    }
+  } catch (err) {
+    console.warn('Failed to save persisted backtests', err);
+  }
+}
+
 interface EngineState {
   connectionStatus: EngineConnectionStatus;
   pnlSeries: PnlPoint[];
@@ -19,10 +44,10 @@ interface EngineState {
   logs: string[];
   selectedStrategyId: string | null;
   metrics?: {
-  lastCpu: number;
-  lastMemGb: number | null;
-  ts: number;
-};
+    lastCpu: number;
+    lastMemGb: number | null;
+    ts: number;
+  };
 }
 
 interface EngineActions {
@@ -43,18 +68,16 @@ interface EngineActions {
 
 export type EngineStore = EngineState & EngineActions;
 
-export const useEngineStore = create<EngineStore>((set, _) => ({
+export const useEngineStore = create<EngineStore>((set) => ({
   connectionStatus: 'disconnected',
   pnlSeries: [],
   strategyPnl: {},
   strategies: [],
   positions: [],
   trades: [],
-  backtests: [],
+  backtests: loadPersistedBacktests(),
   logs: [],
   selectedStrategyId: null,
-  lastEventAt: null,
-  lastError: null,
   metrics: undefined,
 
   setConnectionStatus(status) {
@@ -127,12 +150,16 @@ export const useEngineStore = create<EngineStore>((set, _) => ({
   upsertBacktest(run) {
     set((state) => {
       const idx = state.backtests.findIndex((b) => b.id === run.id);
+      let updated: BacktestRun[];
       if (idx === -1) {
-        return { backtests: [run, ...state.backtests] };
+        updated = [run, ...state.backtests];
+      } else {
+        const copy = [...state.backtests];
+        copy[idx] = { ...copy[idx], ...run };
+        updated = copy;
       }
-      const copy = [...state.backtests];
-      copy[idx] = { ...copy[idx], ...run };
-      return { backtests: copy };
+      savePersistedBacktests(updated);
+      return { backtests: updated };
     });
   },
 
@@ -163,6 +190,9 @@ export const useEngineStore = create<EngineStore>((set, _) => ({
       logs: [],
       selectedStrategyId: null,
     });
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      localStorage.removeItem(BACKTESTS_STORAGE_KEY);
+    }
   },
 
   setMetrics(cpu, memGb, ts) {

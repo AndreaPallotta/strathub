@@ -1,0 +1,37 @@
+{
+  "strategy_id": "polymarket_nfl_arb",
+  "name": "Polymarket NFL Moneyline Arbitrage",
+  "description": "Exploits odds discrepancies and probability spreads across NFL game prediction outcomes",
+  "parameters": [
+    {
+      "key": "min_spread",
+      "label": "Min Arbitrage Spread ($)",
+      "type": "float",
+      "default": 0.025,
+      "min": 0.005,
+      "max": 0.15,
+      "step": 0.005,
+      "description": "Minimum spread required between bid and ask to trigger an NFL trade"
+    },
+    {
+      "key": "max_position_size",
+      "label": "Max NFL Contracts",
+      "type": "integer",
+      "default": 15,
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "description": "Maximum number of contracts to trade per order"
+    },
+    {
+      "key": "cooldown_seconds",
+      "label": "Trade Cooldown (s)",
+      "type": "float",
+      "default": 1.0,
+      "min": 0.1,
+      "max": 10.0,
+      "step": 0.5,
+      "description": "Delay between consecutive execution signals"
+    }
+  ]
+}

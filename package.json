@@ -1,0 +1,14 @@
+{
+  "name": "strathub",
+  "private": true,
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "npx @tauri-apps/cli dev",
+    "build": "npx @tauri-apps/cli build",
+    "tauri": "npx @tauri-apps/cli"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "baseline-browser-mapping": "^2.11.1"
+  }
+}

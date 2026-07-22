@@ -49,6 +49,9 @@ export function MultiStrategyPnlPanel() {
     },
     xaxis: {
       type: 'datetime',
+      labels: {
+        datetimeUTC: false, // Display in local browser timezone (e.g. 15:19)
+      },
     },
     yaxis: {
       decimalsInFloat: 2,

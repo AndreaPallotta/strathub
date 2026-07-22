@@ -1,90 +1,132 @@
-# StratHub
+# StratHub 2.0 ⚡
 
-## Disclaimer
-> This project is provided "as-is" for learning / hobby purposes only. It is not intended for production or enterprise trading. Use at your own risk — I take no responsibility for any losses, outages, or other issues that may arise from running or adapting this code.
+> **Disclaimer**: This is a personal quantitative trading framework built for research, strategy backtesting, and paper trading prediction markets (Polymarket, Kalshi). It is provided as-is for learning and hobby experimentation.
 
-## What is it
-- StratHub is a small Python-based framework for building and running trading strategies locally.
-- The engine ingests market snapshots, routes them to strategy instances, and emits events (PnL, positions, trades, logs) that a React + TypeScript UI can consume.
-- Example pieces:
-  - engine entrypoint: [`run.py`](run.py)
-  - engine class: [`Engine`](core/engine_loop.py)
-  - base strategy API: [`StrategyBase`](strategies/base.py) and [`StrategyAction`](strategies/base.py)
-  - strategy discovery: [`discover_strategies`](core/strategy_loader.py)
-  - example strategy: [`ArbExampleStrategy`](strategies/arb_example.py)
-  - control/commands: [`ControlCommandHandler`](core/control/command_handler.py)
-  - event types / factory functions: [`EventType`](core/models/events.py)
-  - per-strategy config loader: [`load_strategy_config`](core/config.py)
+StratHub 2.0 is a high-performance desktop application for developing, backtesting, and live-simulating quantitative prediction market strategies. Powered by a **Rust Core Engine**, **PyO3 Python Strategy Bridge**, and a sleek **Mantine React UI**.
 
-## Tech stack (quick)
-- Backend / Engine
-  - Python 3 (environment defined in [env.yaml](env.yaml))
-  - Core engine class: [`Engine`](core/engine_loop.py)
-  - Strategy base & example: [`StrategyBase`](strategies/base.py), [`ArbExampleStrategy`](strategies/arb_example.py)
-  - Strategy discovery: [`discover_strategies`](core/strategy_loader.py)
-  - Control & WS server (control queue + websocket): see [`ControlCommandHandler`](core/control/command_handler.py) and [`run.py`](run.py)
-- Frontend / UI
-  - React + TypeScript + Vite (see [ui/README.md](ui/README.md))
-  - UI state / stream:
-    - WebSocket stream hook: [`useEngineStream`](ui/src/hooks/useEngineStream.ts)
-    - Global store: [`useEngineStore`](ui/src/state/engineStore.ts)
-    - API helpers: [`toggleStrategy`](ui/src/api/engine.ts), [`runBacktest`](ui/src/api/engine.ts)
-  - UI package manifest: [ui/package.json](ui/package.json)
+---
 
-## How to use (quick start)
-1. Copy the example config and edit secrets & endpoints
-   - cp config/strathub.yaml.example config/strathub.yaml
-   - Edit [config/strathub.yaml](config/strathub.yaml) to provide API keys and any other settings (odds API keys, Kalshi details, simulation settings, etc).
+## 📸 Interface Tour
 
-2. Create and activate the Python environment
-   - The environment spec is in [env.yaml](env.yaml). Create it with conda:
-```bash
-conda env create -f env.yaml
-conda activate strat_hub
-```
+### 1. Command Center Overview
+The central dashboard gives a real-time view of net portfolio PnL, active strategies, open contracts, and live engine CPU/RAM load.
 
-3. Start the backend engine
-   - From the project root:
-```bash
-python run.py
-```
-   - `run.py` will load the config, discover strategies via [`discover_strategies`](core/strategy_loader.py), and start the engine and WebSocket server as configured.
+![Overview Dashboard](images/overview.png)
 
-4. Run the UI (development)
-   - Install UI deps and start the Vite dev server:
-```bash
+---
+
+### 2. Strategies & Live Parameter Tweaker
+Manage registered Python strategies and tweak parameters live using interactive sliders. Parameters hot-reload directly into the PyO3 Python runtime without pausing the engine loop.
+
+![Strategies and Live Tweaker](images/strategies_and_tweakers.png)
+
+---
+
+### 3. Positions & Portfolio PnL
+Track live mark-to-market positions, average entry prices, unrealized/realized PnL, and executed trade order streams.
+
+![Positions and PnL](images/position_and_pnl.png)
+
+---
+
+### 4. Interactive Backtest Engine & PDF Tear-Sheet Exporter
+Run historical backtests across custom lookback periods. Analyze multi-tab charts (Cumulative PnL, Drawdown Trajectory, Trade Distribution), compare runs side-by-side, and export printable HTML/PDF tear-sheets.
+
+![Backtest Analytics Modal](images/backtest.png)
+
+---
+
+### 5. Grid Parameter Optimizer
+Run parallel parameter sweeps across custom range bounds (`min_spread` vs `max_position_size`) to identify the optimal parameter permutation that maximizes Sharpe Ratio and Net PnL.
+
+![Grid Optimizer Sweep](images/optimizer.png)
+
+---
+
+### 6. Slack & Discord Webhook Alerts
+Configure real-time push notifications for order fills, risk circuit breakers, and backtest completion directly to your Slack or Discord channels.
+
+![Webhook Alert Settings](images/webhook.png)
+
+---
+
+### 7. System Logs & Live Diagnostics
+Color-coded live system diagnostic log stream (`[INFO]` in white, `[CRITICAL]` in purple, `[SUCCESS]` in green, `[WARN]` in orange, `[ERROR]` in red) with log filtering, autoscroll, and 1-click clipboard copy.
+
+![System Logs Panel](images/logs.png)
+
+---
+
+## 🛠️ Architecture & Tech Stack
+
+- **Backend Core**: Rust 2021 + PyO3 Python runtime bridge + Tokio async event stream.
+- **Frontend UI**: React + TypeScript + Mantine UI + ApexCharts.
+- **Storage**: High-density Gzip compressed binary format (`.bin.gz`) with 85%+ compression ratio.
+- **Standalone CLI**: Pre-compiled `strathub-cli.exe` executable for viewing and inspecting backtests directly from the terminal without Cargo or Rust installed.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Run Desktop Application (Dev Mode)
+```powershell
 cd ui
 npm install
 npm run dev
 ```
-   - The UI connects to the engine WebSocket (see [`useEngineStream`](ui/src/hooks/useEngineStream.ts)) and exposes controls to toggle strategies, run backtests, and view logs / metrics.
 
-5. Build the UI for production
-```bash
-cd ui
-npm run build
+### 2. Run Standalone CLI Tool
+```powershell
+# List saved compressed backtest runs
+.\strathub-cli.exe list
+
+# Inspect backtest details
+.\strathub-cli.exe inspect bt_arb_example_1784746816393
 ```
 
-## Adding / developing strategies
-- Create a new Python module under `strategies/` that defines a subclass of [`StrategyBase`](strategies/base.py). Ensure your class sets a unique `strategy_id` attribute.
-- Strategy configs live in `config/strategies/<strategy_id>.yaml` and are loaded by [`load_strategy_config`](core/config.py).
-- New strategy modules are auto-discovered by [`discover_strategies`](core/strategy_loader.py) when the engine starts.
+---
 
-## Useful entrypoints & files
-- Project configuration: [config/strathub.yaml.example](config/strathub.yaml.example) (copy to `config/strathub.yaml`)
-- Conda environment spec: [env.yaml](env.yaml)
-- Engine run script: [run.py](run.py)
-- Engine core: [`Engine`](core/engine_loop.py)
-- Strategy base & actions: [`StrategyBase`](strategies/base.py), [`StrategyAction`](strategies/base.py)
-- Strategy discovery: [`discover_strategies`](core/strategy_loader.py)
-- Control handler: [`ControlCommandHandler`](core/control/command_handler.py)
-- Frontend README: [ui/README.md](ui/README.md)
-- Frontend manifest: [ui/package.json](ui/package.json)
-- Frontend stream hook: [`useEngineStream`](ui/src/hooks/useEngineStream.ts)
-- Frontend store: [`useEngineStore`](ui/src/state/engineStore.ts)
-- Frontend API helpers: [`toggleStrategy`](ui/src/api/engine.ts), [`runBacktest`](ui/src/api/engine.ts)
+## 📦 GitHub Actions CI & Multi-Platform Releases
 
-## Short notes / tips
-- When you change strategy code or add a new strategy file, restart the engine to pick it up.
-- Use the UI to send control commands (the UI sends a `request_state` control command on connect; see [`useEngineStream`](ui/src/hooks/useEngineStream.ts)).
-- Logs, snapshots and other transports are configurable in [config/strathub.yaml](config/strathub.yaml).
+Pushing a version tag automatically compiles and publishes desktop installers and standalone CLI binaries for **Windows (x86_64)**, **Linux (AMD64)**, and **Linux (ARM64)** to the GitHub Releases page:
+
+```bash
+git tag v2.0.0-alpha.1
+git push origin v2.0.0-alpha.1
+```
+
+### Published Release Executables & Packages:
+- 🪟 **Windows (x86_64)**: `strathub_app.exe`, `strathub-cli-windows-amd64.exe`, `.msi` installer
+- 🐧 **Linux (AMD64 x86_64)**: `strathub_app-linux-amd64`, `strathub-cli-linux-amd64`, `.AppImage`, `.deb`
+- 🥧 **Linux (ARM64 aarch64)**: `strathub-cli-linux-arm64` (Raspberry Pi & ARM servers)
+
+---
+
+## 🐍 Writing Custom Python Strategies
+
+Create a subclass of `BaseStrategy` under `strategies/`:
+
+```python
+from base_strategy import BaseStrategy
+
+class MyPredictionStrategy(BaseStrategy):
+    def __init__(self, params=None):
+        super().__init__("my_strategy", params)
+
+    def on_tick(self, snapshot: dict) -> dict:
+        min_edge = float(self.get_param("min_spread", 0.015))
+        ask = float(snapshot.get("best_ask", 0.0))
+        ref_implied = snapshot.get("ref_implied_yes")
+
+        if ref_implied and (ref_implied - ask) >= min_edge:
+            return {
+                "action": "BUY",
+                "ticker": snapshot["ticker"],
+                "size": 10,
+                "price": ask,
+                "reason": "Implied probability edge detected"
+            }
+        return None
+```
+
+Define parameter defaults in `strategies/<strategy_id>.params.json` to automatically generate UI sliders in the Live Parameter Tweaker!

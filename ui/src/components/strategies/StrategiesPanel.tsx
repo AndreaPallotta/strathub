@@ -8,11 +8,13 @@ import {
   TextInput,
   SegmentedControl,
   Stack,
+  ActionIcon,
 } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import { useState, useMemo } from 'react';
 import { useEngineStore } from '../../state/engineStore';
 import { toggleStrategy } from '../../api/engine';
-import { loadPrefs, savePrefs } from '../../lib/prefs';
+import { savePrefs } from '../../lib/prefs';
 
 type StatusFilter = 'all' | 'enabled' | 'disabled';
 
@@ -21,8 +23,7 @@ export function StrategiesPanel() {
   const selectedStrategyId = useEngineStore((s) => s.selectedStrategyId);
   const setSelectedStrategy = useEngineStore((s) => s.setSelectedStrategy);
 
-  const initialPrefs = loadPrefs();
-  const [search, setSearch] = useState(initialPrefs.selectedStrategyId ?? '');
+  const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   async function handleToggle(id: string, enabled: boolean) {
@@ -54,7 +55,7 @@ export function StrategiesPanel() {
     <Card withBorder radius="md" h="100%">
       <Stack gap="xs" mb="xs">
         <Group justify="space-between">
-          <Text fw={500}>Strategies</Text>
+          <Text fw={500}>Registered Strategies</Text>
           <Badge size="sm" variant="light">
             {strategies.length} total
           </Badge>
@@ -62,9 +63,16 @@ export function StrategiesPanel() {
         <Group gap="xs">
           <TextInput
             size="xs"
-            placeholder="Search by name or id"
+            placeholder="Search strategies by name or ID..."
             value={search}
             onChange={(e) => setSearch(e.currentTarget.value)}
+            rightSection={
+              search ? (
+                <ActionIcon size="xs" variant="subtle" onClick={() => setSearch('')}>
+                  <IconX size={12} />
+                </ActionIcon>
+              ) : null
+            }
             style={{ flex: 1 }}
           />
           <SegmentedControl
@@ -81,14 +89,14 @@ export function StrategiesPanel() {
       </Stack>
 
       {filtered.length === 0 ? (
-        <Text size="xs" c="dimmed">
-          No strategies match filters.
+        <Text size="xs" c="dimmed" mt="xs">
+          No strategies match current filters.
         </Text>
       ) : (
         <Table striped highlightOnHover withTableBorder>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Name</Table.Th>
+              <Table.Th>Strategy</Table.Th>
               <Table.Th>Status</Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -102,18 +110,25 @@ export function StrategiesPanel() {
                   style={{
                     cursor: 'pointer',
                     backgroundColor: isSelected
-                      ? 'rgba(66, 153, 225, 0.15)'
+                      ? 'rgba(56, 189, 248, 0.12)'
                       : undefined,
                   }}
                 >
                   <Table.Td>
                     <Group gap="xs">
                       {isSelected && (
-                        <Badge size="xs" color="blue" variant="filled">
+                        <Badge size="xs" color="sky" variant="filled">
                           selected
                         </Badge>
                       )}
-                      <Text>{row.name}</Text>
+                      <div>
+                        <Text size="xs" fw={600}>
+                          {row.name}
+                        </Text>
+                        <Text size="11px" c="dimmed" style={{ fontFamily: 'monospace' }}>
+                          {row.id}
+                        </Text>
+                      </div>
                     </Group>
                   </Table.Td>
                   <Table.Td onClick={(e) => e.stopPropagation()}>
@@ -124,10 +139,15 @@ export function StrategiesPanel() {
                         onChange={(e) =>
                           handleToggle(row.id, e.currentTarget.checked)
                         }
+                        color="green"
                       />
-                      <Text size="xs" c="dimmed">
+                      <Badge
+                        size="xs"
+                        color={row.enabled ? 'green' : 'gray'}
+                        variant={row.enabled ? 'filled' : 'light'}
+                      >
                         {row.enabled ? 'Enabled' : 'Disabled'}
-                      </Text>
+                      </Badge>
                     </Group>
                   </Table.Td>
                 </Table.Tr>

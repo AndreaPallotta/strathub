@@ -1,0 +1,9 @@
+timestamp,ticker,best_bid,best_ask,ref_implied_yes,description
+1725150000,KXEST-ELECTION-2024,0.510,0.530,0.550,2024 Presidential Election Outcome
+1725153600,KXEST-ELECTION-2024,0.515,0.535,0.555,2024 Presidential Election Outcome
+1725157200,KXEST-ELECTION-2024,0.505,0.525,0.560,2024 Presidential Election Outcome
+1725160800,KXEST-ELECTION-2024,0.520,0.540,0.575,2024 Presidential Election Outcome
+1725164400,KXEST-ELECTION-2024,0.530,0.550,0.590,2024 Presidential Election Outcome
+1725168000,KXEST-ELECTION-2024,0.545,0.565,0.610,2024 Presidential Election Outcome
+1725171600,KXEST-ELECTION-2024,0.540,0.560,0.605,2024 Presidential Election Outcome
+1725175200,KXEST-ELECTION-2024,0.560,0.580,0.630,2024 Presidential Election Outcome
