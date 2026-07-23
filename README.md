@@ -1,6 +1,10 @@
 # StratHub 2.0 ⚡
 
-> **Disclaimer**: This is a personal quantitative trading framework built for research, strategy backtesting, and paper trading prediction markets (Polymarket, Kalshi). It is provided as-is for learning and hobby experimentation.
+> [!WARNING]
+> **EDUCATIONAL & EXPERIMENTAL USE ONLY**
+> StratHub 2.0 is a personal hobby project created strictly for educational, research, and paper-trading simulation purposes. **It is NOT an enterprise trading system, production software, or financial tool.**
+> 
+> The author takes **zero responsibility or liability** for any financial losses, trading damages, software defects, API outages, or unexpected behaviors resulting from running or adapting this codebase. Use entirely at your own risk.
 
 StratHub 2.0 is a high-performance desktop application for developing, backtesting, and live-simulating quantitative prediction market strategies. Powered by a **Rust Core Engine**, **PyO3 Python Strategy Bridge**, and a sleek **Mantine React UI**.
 
